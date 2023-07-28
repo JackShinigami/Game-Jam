@@ -78,8 +78,6 @@ public class Player_Behavior : MonoBehaviour
             if(jumpCount <= 1)
                 addForceToPlayer(startPoint - endPoint, minPower, maxPower, power);
 
-
-
             lt.endLine();
             jumpCount++;
         }
