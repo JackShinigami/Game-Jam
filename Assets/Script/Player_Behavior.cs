@@ -16,41 +16,49 @@ public class Player_Behavior : MonoBehaviour
     private Vector3 endPoint;
     private Vector2 ForceVector;
 
-    void Start()
+    private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         lt = GetComponent<Line_Trajectory>();
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if(Input.GetMouseButtonDown(0))
         {
-            startPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            startPoint.z = 15; 
+            setToMousePos(ref startPoint);
         }
 
         if (Input.GetMouseButton(0))
         {
-            Vector3 currentPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            currentPoint.z = 10;
-            Vector3 midPoint = new Vector3((startPoint.x + rb.transform.position.x) / 2, (startPoint.y + rb.transform.position.y) / 2, 15f);
-            Vector3 targetPoint = new Vector3(2 * midPoint.x - currentPoint.x, 2 * midPoint.y - currentPoint.y, 15f);
+            Vector3 currentPoint = new Vector3();
+            setToMousePos(ref currentPoint);
 
-
+            Vector3 midPoint = new Vector3((startPoint.x + rb.transform.position.x) / 2, (startPoint.y + rb.transform.position.y) / 2, 10f);
+            Vector3 targetPoint = new Vector3(2 * midPoint.x - currentPoint.x, 2 * midPoint.y - currentPoint.y, 10f);
 
             lt.renderLine(targetPoint, rb.position);
         }
 
         if (Input.GetMouseButtonUp(0))
         {
-            endPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            endPoint.z = 15;
-            ForceVector = new Vector2(Mathf.Clamp(startPoint.x - endPoint.x, minPower.x, maxPower.x),
-                Mathf.Clamp(startPoint.y - endPoint.y, minPower.y, maxPower.y));
+            setToMousePos(ref endPoint);
+
+            ForceVector = new Vector2(
+                Mathf.Clamp(startPoint.x - endPoint.x, minPower.x, maxPower.x),
+                Mathf.Clamp(startPoint.y - endPoint.y, minPower.y, maxPower.y)
+                );
+
             rb.AddForce(ForceVector * power, ForceMode2D.Impulse);
             lt.endLine();
         }
     }
+    protected virtual void setToMousePos(ref Vector3 pos)
+    {
+        pos = Input_Manager.Instance.MouseWorldPos;
+        pos.z = 10;
+    }
+
+
 }
