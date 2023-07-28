@@ -77,13 +77,8 @@ public class Player_Behavior : MonoBehaviour
 
             if(jumpCount <= 1)
                 addForceToPlayer(startPoint - endPoint, minPower, maxPower, power);
-<<<<<<< Updated upstream
 
-            lt.endLine();
-=======
-            else if(jumpCount == 1)
-                addForceToPlayer(startPoint - endPoint, minPower, maxPower, power/2);
->>>>>>> Stashed changes
+
 
             lt.endLine();
             jumpCount++;
