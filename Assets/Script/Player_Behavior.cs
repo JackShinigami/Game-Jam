@@ -46,6 +46,10 @@ public class Player_Behavior : MonoBehaviour
         {
             addForceToPlayer(rb.velocity * -1 * 100, min, max, 1);
         }
+        else if(collision.gameObject.CompareTag("Jumper"))
+        {
+            addForceToPlayer(Vector2.up * 50, min, max, 1);
+        }
     }
 
     private void handleMovement()
@@ -71,10 +75,9 @@ public class Player_Behavior : MonoBehaviour
         {
             setToMousePos(ref endPoint);
 
-            if(jumpCount == 0)
+            if(jumpCount <= 1)
                 addForceToPlayer(startPoint - endPoint, minPower, maxPower, power);
-            else if(jumpCount == 1)
-                addForceToPlayer(startPoint - endPoint, minPower, maxPower, power/2);
+
             lt.endLine();
 
             jumpCount++;
