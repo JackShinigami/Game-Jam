@@ -34,8 +34,13 @@ public class Player_Behavior : MonoBehaviour
         if (Input.GetMouseButton(0))
         {
             Vector3 currentPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            currentPoint.z = 15;
-            lt.renderLine(startPoint, currentPoint);
+            currentPoint.z = 10;
+            Vector3 midPoint = new Vector3((startPoint.x + rb.transform.position.x) / 2, (startPoint.y + rb.transform.position.y) / 2, 15f);
+            Vector3 targetPoint = new Vector3(2 * midPoint.x - currentPoint.x, 2 * midPoint.y - currentPoint.y, 15f);
+
+
+
+            lt.renderLine(targetPoint, rb.position);
         }
 
         if (Input.GetMouseButtonUp(0))
