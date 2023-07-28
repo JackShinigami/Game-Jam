@@ -14,7 +14,9 @@ public class Player_Behavior : MonoBehaviour
     Line_Trajectory lt;
     private Vector3 startPoint;
     private Vector3 endPoint;
-    private Vector2 ForceVector;
+    // private Vector2 ForceVector;
+
+    private int jumpCount = 0;
 
     private void Start()
     {
@@ -25,34 +27,9 @@ public class Player_Behavior : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if(Input.GetMouseButtonDown(0))
-        {
-            setToMousePos(ref startPoint);
-        }
-
-        if (Input.GetMouseButton(0))
-        {
-            Vector3 currentPoint = new Vector3();
-            setToMousePos(ref currentPoint);
-
-            Vector3 midPoint = new Vector3((startPoint.x + rb.transform.position.x) / 2, (startPoint.y + rb.transform.position.y) / 2, 10f);
-            Vector3 targetPoint = new Vector3(2 * midPoint.x - currentPoint.x, 2 * midPoint.y - currentPoint.y, 10f);
-
-            lt.renderLine(targetPoint, rb.position);
-        }
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            setToMousePos(ref endPoint);
-
-            ForceVector = new Vector2(
-                Mathf.Clamp(startPoint.x - endPoint.x, minPower.x, maxPower.x),
-                Mathf.Clamp(startPoint.y - endPoint.y, minPower.y, maxPower.y)
-                );
-
-            rb.AddForce(ForceVector * power, ForceMode2D.Impulse);
-            lt.endLine();
-        }
+        handleMovement();
+        if (isGrounded())
+            jumpCount = 0;
        
     }
     protected virtual void setToMousePos(ref Vector3 pos)
@@ -67,13 +44,53 @@ public class Player_Behavior : MonoBehaviour
        
         if(collision.gameObject.CompareTag("Suriken"))
         {
-            Vector2 PushVector = new Vector2(
-                Mathf.Clamp(-1 * rb.velocity.x * 100, min.x, max.x),
-                Mathf.Clamp(-1 * rb.velocity.y * 100, min.y, max.y)
-                );
-            rb.AddForce(PushVector, ForceMode2D.Impulse);
-            Debug.Log(PushVector);
+            addForceToPlayer(rb.velocity * -1 * 100, min, max, 1);
         }
     }
 
+    private void handleMovement()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            setToMousePos(ref startPoint);
+        }
+
+        if (Input.GetMouseButton(0))
+        {
+            Vector3 currentPoint = new Vector3();
+            setToMousePos(ref currentPoint);
+
+            Vector3 midPoint = new Vector3((startPoint.x + rb.transform.position.x) / 2, (startPoint.y + rb.transform.position.y) / 2, 10f);
+            Vector3 targetPoint = new Vector3(2 * midPoint.x - currentPoint.x, 2 * midPoint.y - currentPoint.y, 10f);
+
+            if(jumpCount < 2)
+                lt.renderLine(targetPoint, rb.position);
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            setToMousePos(ref endPoint);
+
+            if(jumpCount == 0)
+                addForceToPlayer(startPoint - endPoint, minPower, maxPower, power);
+            else if(jumpCount == 1)
+                addForceToPlayer(startPoint - endPoint, minPower, maxPower, power/2);
+            lt.endLine();
+
+            jumpCount++;
+        }
+    }    
+    private void addForceToPlayer(Vector2 vector, Vector2 min, Vector2 max, float power)
+    {
+        Vector2 ForceVector = new Vector2(
+                Mathf.Clamp(vector.x, min.x, max.x),
+                Mathf.Clamp(vector.y , min.y, max.y)
+            );
+        rb.AddForce(ForceVector * power, ForceMode2D.Impulse);
+    }
+
+    private bool isGrounded()
+    {
+        return rb.velocity == Vector2.zero;
+    }
 }
