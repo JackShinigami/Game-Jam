@@ -53,12 +53,27 @@ public class Player_Behavior : MonoBehaviour
             rb.AddForce(ForceVector * power, ForceMode2D.Impulse);
             lt.endLine();
         }
+       
     }
     protected virtual void setToMousePos(ref Vector3 pos)
     {
         pos = Input_Manager.Instance.MouseWorldPos;
         pos.z = 10;
     }
-
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Vector2 max = new Vector2(100, 100);
+        Vector2 min = new Vector2(-100, -100);
+       
+        if(collision.gameObject.CompareTag("Suriken"))
+        {
+            Vector2 PushVector = new Vector2(
+                Mathf.Clamp(-1 * rb.velocity.x * 100, min.x, max.x),
+                Mathf.Clamp(-1 * rb.velocity.y * 100, min.y, max.y)
+                );
+            rb.AddForce(PushVector, ForceMode2D.Impulse);
+            Debug.Log(PushVector);
+        }
+    }
 
 }
