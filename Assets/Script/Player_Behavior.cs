@@ -27,7 +27,7 @@ public class Player_Behavior : MonoBehaviour
     private void Update()
     {
         handleMovement();
-        if (isGrounded())
+        if (isStopped())
             jumpCount = 0;
        
     }
@@ -89,7 +89,7 @@ public class Player_Behavior : MonoBehaviour
         rb.AddForce(ForceVector * power, ForceMode2D.Impulse);
     }
 
-    private bool isGrounded()
+    private bool isStopped()
     {
         return rb.velocity == Vector2.zero;
     }
