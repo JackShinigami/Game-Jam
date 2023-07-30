@@ -13,8 +13,7 @@ public class Player_Behavior : MonoBehaviour
 
     Line_Trajectory lt;
     private Vector3 startPoint;
-    private Vector3 endPoint;
-    // private Vector2 ForceVector;
+    private Vector3 targetPoint;
 
     private int jumpCount = 0;
 
@@ -65,7 +64,7 @@ public class Player_Behavior : MonoBehaviour
             setToMousePos(ref currentPoint);
 
             Vector3 midPoint = new Vector3((startPoint.x + rb.transform.position.x) / 2, (startPoint.y + rb.transform.position.y) / 2, 10f);
-            Vector3 targetPoint = new Vector3(2 * midPoint.x - currentPoint.x, 2 * midPoint.y - currentPoint.y, 10f);
+            targetPoint = new Vector3(2 * midPoint.x - currentPoint.x, 2 * midPoint.y - currentPoint.y, 10f);
 
             if(jumpCount < 2)
                 lt.renderLine(targetPoint, rb.position);
@@ -73,10 +72,9 @@ public class Player_Behavior : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0))
         {
-            setToMousePos(ref endPoint);
 
             if(jumpCount <= 1)
-                addForceToPlayer(startPoint - endPoint, minPower, maxPower, power);
+                addForceToPlayer(targetPoint -  new Vector3(rb.position.x, rb.position.y, 10), minPower, maxPower, power);
 
             lt.endLine();
             jumpCount++;
