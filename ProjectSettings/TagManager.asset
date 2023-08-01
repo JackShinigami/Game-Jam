@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Suriken
   - Jumper
+  - Fan
   layers:
   - Default
   - TransparentFX

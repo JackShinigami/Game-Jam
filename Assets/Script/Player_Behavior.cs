@@ -51,6 +51,15 @@ public class Player_Behavior : MonoBehaviour
         }
     }
 
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        Vector2 max = new Vector2(100, 100);
+        Vector2 min = new Vector2(-100, -100);
+        if (collision.gameObject.CompareTag("Fan"))
+        {
+            addForceToPlayer(collision.gameObject.transform.up, min, max, 2);
+        }
+    }
     private void handleMovement()
     {
         if (Input.GetMouseButtonDown(0))
