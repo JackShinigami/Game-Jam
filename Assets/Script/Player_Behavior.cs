@@ -1,3 +1,5 @@
+using Cinemachine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -5,11 +7,29 @@ using UnityEngine;
 
 public class Player_Behavior : MonoBehaviour
 {
-    [SerializeField] float power = 10f;
     private Rigidbody2D rb;
+
+    private float zoomTimer = 0f;
+    private float dezoomTimer = 0f;
+    public float interval = 3f;
+
+    [SerializeField]private SpriteRenderer BG;
+    private float BG_xScale;
+    private float BG_yScale;
+    private float BG_zScale;
 
     [SerializeField] Vector2 minPower;
     [SerializeField] Vector2 maxPower;
+    [SerializeField] float power = 10f;
+
+    [SerializeField] private CinemachineVirtualCamera virtualCamera;
+    [SerializeField] private float zoomSpeed = 0.1f;
+    private float currentZoom = 0f;
+    private float minFOV = 7f;
+    private float maxFOV = 12;
+    private bool isDezoomed = false;
+    private bool isZoomed = true;
+
 
     Line_Trajectory lt;
     private Vector3 startPoint;
@@ -21,6 +41,9 @@ public class Player_Behavior : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         lt = GetComponent<Line_Trajectory>();
+        BG_xScale = BG.transform.localScale.x;
+        BG_yScale = BG.transform.localScale.y;
+        BG_zScale = BG.transform.localScale.z;
     }
 
     // Update is called once per frame
@@ -29,7 +52,7 @@ public class Player_Behavior : MonoBehaviour
         handleMovement();
         if (isStopped())
             jumpCount = 0;
-       
+        handleZoom();
     }
     protected virtual void setToMousePos(ref Vector3 pos)
     {
@@ -102,4 +125,51 @@ public class Player_Behavior : MonoBehaviour
     {
         return rb.velocity == Vector2.zero;
     }
+
+    private void handleZoom()
+    {
+        if (Input.GetMouseButton(1) && isZoomed)
+        {
+            dezoomTimer = 0f;
+            Zoom(currentZoom);
+            currentZoom += zoomSpeed ;
+
+            zoomTimer += Time.deltaTime;
+            if (zoomTimer >= interval)
+            {
+                zoomTimer = 0f;
+                isZoomed = false;
+                isDezoomed = true;
+            }
+
+        }
+        else if (Input.GetMouseButtonUp(1) || isDezoomed)
+        {
+            zoomTimer = 0f;
+            deZoom();
+
+            dezoomTimer += Time.deltaTime;
+            if (dezoomTimer >= interval)
+            {
+                dezoomTimer = 0f;
+                isZoomed = true;
+                isDezoomed = false;
+            }
+
+        }
+
+    }
+    private void Zoom(float zoom)
+    {
+        float zoomNumber = virtualCamera.m_Lens.OrthographicSize + zoom;
+        virtualCamera.m_Lens.OrthographicSize = Mathf.Clamp(zoomNumber, minFOV, maxFOV);
+    }
+    private void deZoom() 
+    {
+        virtualCamera.m_Lens.OrthographicSize = minFOV;
+        currentZoom = 0;
+    }
+
+
+
 }
