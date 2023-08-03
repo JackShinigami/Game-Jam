@@ -64,7 +64,6 @@ public class Player_Behavior : MonoBehaviour
         if (!isStopped())
             isHit = true;
 
-        Debug.Log(rb.velocity.magnitude);
     }
     protected virtual void setToMousePos(ref Vector3 pos)
     {
