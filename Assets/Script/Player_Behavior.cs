@@ -26,7 +26,7 @@ public class Player_Behavior : MonoBehaviour
     [SerializeField] private float zoomSpeed = 0.1f;
     private float currentZoom = 0f;
     private float minFOV = 7f;
-    private float maxFOV = 12;
+    [SerializeField] private float maxFOV = 15;
     private bool isDezoomed = false;
     private bool isZoomed = true;
 
