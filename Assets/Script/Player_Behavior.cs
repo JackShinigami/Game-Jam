@@ -9,6 +9,8 @@ public class Player_Behavior : MonoBehaviour
 {
     private Rigidbody2D rb;
 
+    [SerializeField] AudioSource audioSource;
+
     private float zoomTimer = 0f;
     private float dezoomTimer = 0f;
     public float interval = 3f;
@@ -41,9 +43,11 @@ public class Player_Behavior : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         lt = GetComponent<Line_Trajectory>();
+
         BG_xScale = BG.transform.localScale.x;
         BG_yScale = BG.transform.localScale.y;
         BG_zScale = BG.transform.localScale.z;
+
     }
 
     // Update is called once per frame
@@ -105,8 +109,11 @@ public class Player_Behavior : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
 
-            if(jumpCount <= 1)
-                addForceToPlayer(targetPoint -  new Vector3(rb.position.x, rb.position.y, 10), minPower, maxPower, power);
+            if (jumpCount <= 1)
+            {
+                addForceToPlayer(targetPoint - new Vector3(rb.position.x, rb.position.y, 10), minPower, maxPower, power);
+                audioSource.Play();
+            }   
 
             lt.endLine();
             jumpCount++;
