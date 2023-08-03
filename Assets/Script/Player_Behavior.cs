@@ -2,6 +2,7 @@ using Cinemachine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -9,7 +10,10 @@ public class Player_Behavior : MonoBehaviour
 {
     private Rigidbody2D rb;
 
-    [SerializeField] AudioSource audioSource;
+    [SerializeField] AudioSource audioJump;
+    [SerializeField] AudioSource audioHit;
+    private bool isHit = false;
+    [SerializeField] float minimumBouncing = 0.1f;
 
     private float zoomTimer = 0f;
     private float dezoomTimer = 0f;
@@ -57,6 +61,10 @@ public class Player_Behavior : MonoBehaviour
         if (isStopped())
             jumpCount = 0;
         handleZoom();
+        if (!isStopped())
+            isHit = true;
+
+        Debug.Log(rb.velocity.magnitude);
     }
     protected virtual void setToMousePos(ref Vector3 pos)
     {
@@ -76,8 +84,15 @@ public class Player_Behavior : MonoBehaviour
         {
             addForceToPlayer(Vector2.up * 50, min, max, 1);
         }
+        else if(collision.gameObject.CompareTag("Tile"))
+        {
+            if (isHit && rb.velocity.magnitude > minimumBouncing)
+            {
+                audioHit.Play();
+                isHit = false;
+            }
+        }
     }
-
     private void OnTriggerStay2D(Collider2D collision)
     {
         Vector2 max = new Vector2(100, 100);
@@ -112,7 +127,7 @@ public class Player_Behavior : MonoBehaviour
             if (jumpCount <= 1)
             {
                 addForceToPlayer(targetPoint - new Vector3(rb.position.x, rb.position.y, 10), minPower, maxPower, power);
-                audioSource.Play();
+                audioJump.Play();
             }   
 
             lt.endLine();
@@ -127,12 +142,10 @@ public class Player_Behavior : MonoBehaviour
             );
         rb.AddForce(ForceVector * power, ForceMode2D.Impulse);
     }
-
     private bool isStopped()
     {
         return rb.velocity == Vector2.zero;
     }
-
     private void handleZoom()
     {
         if (Input.GetMouseButton(1) && isZoomed)
@@ -176,7 +189,4 @@ public class Player_Behavior : MonoBehaviour
         virtualCamera.m_Lens.OrthographicSize = minFOV;
         currentZoom = 0;
     }
-
-
-
 }
